@@ -1,7 +1,10 @@
 <template>
     <div class="scs-screen login">
         <el-row class="content">
-            <div class="logo"></div>
+            <div class="logo" style="float:left"></div>
+            <div style="float:left; padding-left: 20px" >
+                <p style="font-size: 30px; padding-top:10px"> 水电收费系统</p>
+            </div>
             <el-row>
                 <el-form label-width="0px" :model="data" :rules="rule_data" ref="loginForm">
                     <el-form-item prop='user_name'>
@@ -14,11 +17,14 @@
                     </el-form-item>
                 </el-form>
                 <el-button type="primary" @click="login" :disabled="loading">登录</el-button>
-                <el-button @click="openReg('register')" :disabled="loading">注册</el-button>
+                <!--注册按钮，不需要-->
+                <!--<el-button @click="openReg('register')" :disabled="loading">注册</el-button>-->
                 <el-button type="text" @click="openReg('retrieve')">忘记密码</el-button>
             </el-row>
         </el-row>
 
+
+        <!--注册功能：本项目不需要-->
         <el-dialog :title="title[type]" :visible.sync="register.visible" size="tiny">
             <el-form :model="form" :rules="register.rules" label-width="80px" ref="regForm">
                 <el-form-item label="帐号" prop="user_name" v-if="type=='register'">
@@ -260,8 +266,10 @@
             max-width: 400px;
             border-radius: 10px;
             .logo {
-                background: url('../assets/logo.png') no-repeat center 0;
-                height: 64px;
+                background: url('../assets/logo.png') no-repeat center ;
+                background-size: 100% 100%;
+                height: 70px;
+                width: 70px;
                 margin-bottom: 15px;
             }
             .el-button {

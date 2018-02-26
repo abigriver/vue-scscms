@@ -13,10 +13,10 @@ import {storage} from 'utils';
 
 Vue.use(ElementUI);
 Vue.use(VueRouter);
-
+//NProgress，前端必备进度条插件
 import routes from './routes.js';
 
-//页面顶部进度条
+//页面顶部进度条 nprogress
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 

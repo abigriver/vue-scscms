@@ -7,9 +7,9 @@ CREATE TABLE `user` (
   `pass_word` char(128) NOT NULL DEFAULT '' COMMENT '用户密码',
   `user_type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '用户类型 0:未审核用户;1:超级管理员;2:普通管理员;3:VIP用户;4:普通用户',
   `user_email` char(128) NOT NULL DEFAULT '' COMMENT '邮箱地址',
-  `create_time` timestamp DEFAULT '0000-00-00 00:00:00' COMMENT '注册时间',
+  `create_time` timestamp DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
   `login_ip` char(15) NOT NULL DEFAULT '' COMMENT '登录IP',
-  `update_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT '最后登录时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后登录时间',
   `user_pic` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL DEFAULT '' COMMENT '用户头像',
   `user_extend` text CHARACTER SET utf8 COLLATE utf8_unicode_ci COMMENT '扩展信息',
   PRIMARY KEY (`id`)
@@ -34,8 +34,8 @@ CREATE TABLE `article` (
   `content` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL COMMENT '文章内容',
   `passed` int(1) NOT NULL DEFAULT '0' COMMENT '审核状态',
   `read_type` tinyint NOT NULL DEFAULT '0' COMMENT '阅读权限（参阅用户类型）',
-  `create_time` timestamp NULL DEFAULT '0000-00-00 00:00:00' COMMENT '发表时间',
-  `update_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发表时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   `article_extend` text CHARACTER SET utf8 COLLATE utf8_unicode_ci COMMENT '扩展信息',
   PRIMARY KEY (`id`),
   KEY `sort_id` (`sort_id`) USING BTREE,
@@ -51,7 +51,8 @@ CREATE TABLE `upload` (
   `mime_type` char(50) NOT NULL DEFAULT '' COMMENT '文件类型',
   `file_size` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '文件大小KB',
   `is_delete` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否删除',
-  `create_time` timestamp NULL DEFAULT '0000-00-00 00:00:00' COMMENT '上传时间',
+  `create_time` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT '上传时间',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='上传列表';
+
