@@ -37,6 +37,40 @@ function sendEmail(email, title, body) {
         });
     })
 }
+// 员工列表
+async function listStaff(ctx) {
+    let data = ctx.request.body;
+    const arr = [];
+    let querying = '';
+    if(data.staffNo){
+        querying += " and staffNo like ?";
+        arr.push('%' + data.staffNo + '%');
+    }
+    if(data.staffName){
+        querying += " and staffName like ?";
+        arr.push('%' + data.staffName + '%');
+    }
+    if(data.staffPhone){
+        querying += " and staffPhone like ?";
+        arr.push('%' + data.staffPhone + '%');
+    }
+    if(/^[0-5]$/.test(data.staffType)){
+        querying += " and staffType=?";
+        arr.push(data.staffType >> 0);
+    }
+    console.log(querying, arr)
+    const connection = await mysql.createConnection(config.mysqlDB);
+    const [list] = await connection.execute("SELECT * FROM `staff`"+querying.replace('and','where'), arr);
+    await connection.end();
+    list.forEach(obj=>{
+        obj.user_email = '****'+obj.user_email.slice(4);//过滤邮箱地址
+        obj.user_pass = '';
+    });
+    ctx.body = {
+        success: true,
+        data:{data:list}
+    };
+}
 
 //用户列表
 async function listUser(ctx) {
@@ -122,6 +156,77 @@ async function upUserPic(ctx) {
         success: !msg,
         message: msg,
         data: {pic}
+    }
+}
+//更新staff员工信息
+async function updateStaff(ctx) {
+    let data = ctx.request.body;
+    // user_type:2,3,4
+    data.user_type = data.user_type >> 0;
+    // data.user_type = 1 === data.user_type ? 4 : data.user_type;
+    let msg,arr = [];
+    // user_id:对应staffNO，
+    const obj = {
+        staffNo:'用户帐号',
+        staffName:'用户姓名',
+        staffPhone:'用户手机',
+        staffPwd:'用户密码',
+        staffType:'用户类型',
+        staffPic:'用户头像',
+        mail:'邮箱'
+    };
+    const array = Object.getOwnPropertyNames(obj);
+    //校验，检查是否有空字段(除了 头像和邮箱 不检查)
+    array.forEach(key=>{
+        if(data[key]==='' &&  key !=='staffPic' && key !=='mail'  &&!msg){
+            msg = obj[key]+'不能为空！';
+        }
+        arr.push(data[key]);
+    });
+    // 字段有效性检查
+    if (!common.name_reg.test(data.staffName)) {
+        msg = common.name_txt;
+    } else if (!common.pass_reg.test(data.staffPwd)) {
+        msg = common.pass_txt;
+    } else if (!common.email_reg.test(data.mail)) {
+        // msg = common.email_txt;
+    } else if (!common.phone_reg.test(data.staffPhone)) {
+        msg = 'phone number wrong';
+    }
+    if(!msg){
+        let id = data.id >> 0;
+        const connection = await mysql.createConnection(config.mysqlDB);
+        if(id){
+            array.splice(0,2);//修改时不能修改帐号和邮箱
+            arr.splice(0,2);
+            if(data.staffPwd === common.defaultPassword){
+                array.shift();//不修改原密码
+                arr.shift();
+            }
+            arr.push(id);
+            const [result] = await connection.execute(`UPDATE user SET ${array.map(k=>k+'=?').join(',')} where id=?`, arr);
+            msg = result.affectedRows === 1 ? '' : '修改用户失败';
+        }else{
+            array.push('create_time');
+            arr.push(new Date().toLocaleString());
+            arr[3] = bcrypt.hashSync(data.staffPwd, bcrypt.genSaltSync(10));//加密密码
+            //先检查是否占用帐号
+            const [rows] = await connection.execute('SELECT staffNo,staffPhone FROM `staff` where `staffNo`=? or `staffPhone`=?', [data.staffNo,data.staffPhone]);
+            if(rows.length > 0) {
+                msg = rows[0].staffNo === data.staffNo ? '帐号已经被占用！' : '手机号已经被占用！';
+            }else{
+                let t = array.join(',') + array.map((()=>'?')).join(',') + arr.toString();
+                console.log(t);
+                const [result] = await connection.execute(`INSERT INTO staff (${array.join(',')}) VALUES (${array.map((()=>'?')).join(',')})`, arr);
+                msg = result.affectedRows === 1 ? '' : '添加用户失败';
+            }
+        }
+        await connection.end();
+    }
+    ctx.body = {
+        success: !msg,
+        message: msg,
+        data: {}
     }
 }
 //保存用户
@@ -796,9 +901,11 @@ export default {
     deleteSort,
     batchDelSort,
     listUser,
+    listStaff,
     passedUser,
     deleteUser,
     getUserById,
     upUserPic,
-    updateUser
+    updateUser,
+    updateStaff
 }

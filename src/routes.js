@@ -8,6 +8,10 @@ import ArticleAdd from 'page/Article/add.vue'
 import UpFileList from 'page/UpFile/list.vue'
 import userList from 'page/User/list.vue'
 import userAdd from 'page/User/add.vue'
+import staffMana from 'page/admin/staffMana'
+import addStaff from 'page/admin/addStaff'
+import campusCodeMana from 'page/admin/campusCodeMana'
+import freeMount from 'page/admin/freeMount'
 //todo 记录
 /*
 *
@@ -28,7 +32,55 @@ export default {
             name:'login',
             meta:{title:'登录'},
             component: Login
-        },{
+        },
+        {
+            path:'/admin',
+            meta:{verify:true, title:'后台管理'},
+            component:Home,
+            redirect: '/admin/staffMana',
+            children:[
+                {
+                    path: 'staff',
+                    meta:{
+                        verify:true,
+                        grade:common.page_grade.listSort,
+                        title: '员工管理',
+                        icon:'fa fa-th-large'
+                    },
+                    component: staffMana
+                },
+                {
+                    path: 'addStaff',
+                    meta:{
+                        verify:true,
+                        grade:common.page_grade.updateStaff,
+                        title: '添加员工',
+                        icon:'fa fa-th-large'
+                    },
+                    component: addStaff
+                },
+                {
+                    path: 'campusCode',
+                    meta:{
+                        verify:true,
+                        grade:common.page_grade.listSort,
+                        title: '校区代码',
+                        icon:'fa fa-th-large'
+                    },
+                    component: campusCodeMana
+                },{
+                    path: 'initFee',
+                    meta:{
+                        verify:true,
+                        grade:common.page_grade.listSort,
+                        title: '免费额度',
+                        icon:'fa fa-th-large'
+                    },
+                    component: freeMount
+                }
+            ]
+        },
+        {
             path: '/article',
             meta:{
                 verify:true,

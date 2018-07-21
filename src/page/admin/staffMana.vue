@@ -1,18 +1,21 @@
 <template>
     <div>
         <el-row class="grid-table">
-            <!--三个查询选项-->
+            <!--四个查询选项-->
             <el-form :inline="true" :model='search_data'>
                 <el-form-item label="帐号">
-                    <el-input size="small" v-model="search_data.user_name"></el-input>
+                    <el-input size="small" v-model="search_data.staffNo"></el-input>
                 </el-form-item>
-                <el-form-item label="邮箱">
-                    <el-input size="small" v-model="search_data.user_email"></el-input>
+                <el-form-item label="姓名">
+                    <el-input size="small" v-model="search_data.staffName"></el-input>
+                </el-form-item>
+                <el-form-item label="手机">
+                    <el-input size="small" v-model="search_data.staffPhone"></el-input>
                 </el-form-item>
                 <el-form-item label="类型">
-                    <el-select size="small" v-model="search_data.user_type">
+                    <el-select size="small" v-model="search_data.staffType">
                         <el-option label="全部" value=""></el-option>
-                        <el-option v-for="(value,key) in user_type" :key="key"
+                        <el-option v-for="(value,key) in staffType" :key="key"
                                    :label="value" :value="key">
                         </el-option>
                     </el-select>
@@ -42,28 +45,32 @@
     import {ajax,storage} from 'utils';
     import common from 'common';
     module.exports = {
-        name: 'list',
+        name: 'staffMana',
         data() {
             return {
                 page_grade:common.page_grade,
                 grade:{
                     listUser:!0,
+                    listStaff:!0,
                     updateUser:!0,
                     passedUser:!0,
                     deleteUser:!0,
                 },
-                user_type:common.user_type,
+                staffType:common.user_type,
                 search_data: {
-                    user_name: '',
-                    user_type: '',
-                    user_email: ''
+                    staffNo:'',
+                    staffName: '',
+                    staffPhone:'',
+                    staffType: ''
                 },
                 multipleSelection:[],
                 table_data: {
                     columns: [
-                        {"key": "user_name", "name": "用户帐号", width: 150},
-                        {"key": "user_email", "name": "用户邮箱", minWidth: 120},
-                        {"key": "user_type", "name": "用户类型", width: 120},
+                        {"key": "staffNo", "name": "员工帐号", width: 150},
+                        {"key": "staffName", "name": "员工姓名", width: 150},
+                        {"key": "staffPhone", "name": "用户手机", width: 150},
+                        {"key": "mail", "name": "用户邮箱", width: 120},
+                        {"key": "staffType", "name": "用户类型", width: 120},
                         {"key": "create_time", "name": "注册时间", width:150},
                         {"key": "operations", "name": "操作", width: 135}
                     ],
@@ -73,7 +80,7 @@
         },
         methods: {
             ajaxData(){
-                ajax.call(this, '/listUser', this.search_data, (obj, err) => {
+                ajax.call(this, '/listStaff', this.search_data, (obj, err) => {
                     if (!err) {
                         this.table_data.data = obj.data;
                     }
@@ -88,9 +95,9 @@
             createButton(h, row, code, text){
                 let self = this;
                 let dis = false;
-                if(code === 'user_type' && this.grade.passedUser
-                ||code === 'edit' && this.grade.updateUser
-                ||code === 'delete' && (/^1|2$/.test(row.user_type)||this.grade.deleteUser)){
+                if(code === 'staffType' && this.grade.passedUser
+                    ||code === 'edit' && this.grade.updateUser
+                    ||code === 'delete' && (/^1|2$/.test(row.user_type)||this.grade.deleteUser)){
                     dis = true;
                 }
                 return h('el-button', {
@@ -113,7 +120,7 @@
                         this.createButton(h,row,'edit','编辑'),
                         this.createButton(h,row,'delete','删除'),
                     ])
-                }else if(key === 'user_type'){
+                }else if(key === 'staffType'){
                     if(str === '0'){
                         return this.createButton(h,row,key,'通过');
                     }
@@ -149,7 +156,7 @@
                 });
             },
             add(){
-                this.$router.push('/user/add');
+                this.$router.push('/admin/addStaff');
             },
             handleSelectionChange(val){
                 this.multipleSelection = val;
@@ -175,10 +182,10 @@
         .el-form-item{
             display: inline-block;
             max-height:240px;
-            width:~'calc(24% - 10px)';
+            width:~'calc(20% - 10px)';
             &:first-child{
                 .el-input{
-                    margin-right:25px;
+                    margin-right:20px;
                 }
             }
             &:last-child{

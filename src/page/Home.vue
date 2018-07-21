@@ -228,11 +228,15 @@
         computed: {
             getMenu(){
                 let menu = this.$router.options.routes;
+                //paths: 排除掉这些路径，不加入菜单中
                 const paths = ['/','*','/login','edit/:id'];
+                // show:决定菜单是否显示
                 menu.forEach(obj => {
                     obj.meta = obj.meta||{};
                     obj.meta.show = !paths.includes(obj.path);
+                    //处理2级子菜单
                     let count = 0;
+                    //没有用嵌套，所以只处理了2重菜单
                     obj.children && obj.children.forEach(item=>{
                         item.meta = item.meta||{};
                         item.meta.show = (count++,!paths.includes(item.path));

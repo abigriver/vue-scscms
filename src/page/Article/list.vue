@@ -1,6 +1,7 @@
 <template>
     <div>
         <el-row class="grid-table">
+            <!--三个查询选项-->
             <el-form :inline="true" :model='search_data'>
                 <el-form-item label="标题">
                     <el-input size="small" v-model="search_data.title"></el-input>

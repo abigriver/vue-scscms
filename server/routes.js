@@ -24,7 +24,10 @@ const urls = {
     'listUpFile': {},
     'delFile': {},
     'listUser': {},
+    'staffMana': {},//管理员工信息，员工列表
+    'listStaff':{},
     'updateUser' : {},
+    'updateStaff' : {},  //更新员工信息
     'getUserById': {userType: common.page_grade.updateUser},
     'passedUser': {},
     'deleteUser': {},
@@ -40,6 +43,7 @@ Object.getOwnPropertyNames(urls).forEach(key=>{
     if(common.page_grade.hasOwnProperty(key)){
         urls[key].userType = common.page_grade[key];//覆盖访问权限
     }
+    // 循环添加路由
     if(key !== 'upFile'){
         let obj = urls[key];
         let url = '/' + key + (obj.url || '');
@@ -88,6 +92,7 @@ async function verify(ctx) {
 		if(ctx.url.substring(0,5) !== '/api/'){
 			resolve({});//非后端接口请求
 		}
+		//将请求从 /api/xxxx 中分割 : arr为数组，第一个是/api/  第2个是后面请求地址
         let arr = /\/api\/([a-zA-Z]+)/.exec(ctx.url);
 		let key = arr ? arr[1]:'';
         let obj = urls[key];

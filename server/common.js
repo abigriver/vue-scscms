@@ -6,7 +6,8 @@ export default {
     name_txt:'3至20个英文或中文字符或数字', //帐号规则
     // pass_reg:/^(?=.*[a-z])(?=.*\d)[a-z\d]{6,12}$/i, //密码验证
     // pass_txt:'6至12个英文和数字组成的字符', //密码规则
-    pass_reg:/^[(a-z\u4e00-\u9fa5)|(0-9)]{6,20}$/i, //密码6-20
+    pass_reg:/^[(a-z\u4e00-\u9fa5)|(0-9)]{3,20}$/i, //密码6-20
+    phone_reg:/^[(0-9)]{2,20}$/,
     defaultPassword:'88888888888a', //默认密码：当修改用户信息时不更改密码的标识
     pass_txt:'6至20个英文或数字组成的字符', //密码规则
     email_reg:/^[a-z\d]+([-_.][a-z\d]+)*@([a-z\d]+[-.])+[a-z]{2,3}$/, //邮箱正则表达式
@@ -16,11 +17,15 @@ export default {
     upFile_maxSize:1024*1024*5,//上传文件大小限制
     upFile_accept:/^image\//,//上传文件格式限制
     user_type:{
-        0: '未审核用户',
-        1: '超级管理员',
-        2: '普通管理员',
-        3: 'VIP用户',
-        4: '普通用户'
+        0: '所有人',
+        1: '系统管理员',
+        2: '公寓管理员',
+        3: '收费员',
+        4: '楼栋管理员',
+        5: '学生'
+    },
+    userMenu:{
+
     },
     //页面权限设置 0:所有人 4:所有登录用户 3:vip用户以上 2:管理员级别 1:只有超级管理员
     page_grade:{
@@ -33,13 +38,17 @@ export default {
         upFile:4, //上传权限(共用)
         listUpFile:4,//管理上传列表
         listUser:4,//用户列表
-        updateUser:1,//添加、修改用户（超级管理员）
+        listStaff:4, //员工列表
+        updateUser:4,//添加、修改用户（超级管理员）
+        updateStaff:4, //*******
+        initSys:4,//初始化系统
+        bakSys:4, //备份系统
         passedUser:4,//审核用户列表
-        deleteUser:2,//删除用户列表
+        deleteUser:4,//删除用户列表
         listArticle: 4,	//文章列表（必须登录）
         updateArticle: 4, //新添或编辑文章（必须登录）
-        passedArticle: 2, //审核文章（管理员级别）
-        deleteArticle: 2, //删除文章（管理员级别或会员删除自己的）
+        passedArticle: 4, //审核文章（管理员级别）
+        deleteArticle: 4, //删除文章（管理员级别或会员删除自己的）
     },
     sort_type:{
         'news':'新闻',
