@@ -90,7 +90,7 @@
                 this.ajaxData();
             },
             selectable(row){
-                return !this.grade.deleteUser && /^[034]$/.test(row.user_type);
+                return !this.grade.deleteUser && /^[012345]$/.test(row.user_type);
             },
             createButton(h, row, code, text){
                 let self = this;

@@ -38,7 +38,7 @@ export default {
         upFile:4, //上传权限(共用)
         listUpFile:4,//管理上传列表
         listUser:4,//用户列表
-        listStaff:4, //员工列表
+        listStaff:4, //********
         updateUser:4,//添加、修改用户（超级管理员）
         updateStaff:4, //*******
         initSys:4,//初始化系统

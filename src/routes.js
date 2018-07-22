@@ -40,7 +40,7 @@ export default {
             redirect: '/admin/staffMana',
             children:[
                 {
-                    path: 'staff',
+                    path: 'staffMana',
                     meta:{
                         verify:true,
                         grade:common.page_grade.listSort,

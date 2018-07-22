@@ -42,6 +42,7 @@ async function listStaff(ctx) {
     let data = ctx.request.body;
     const arr = [];
     let querying = '';
+
     if(data.staffNo){
         querying += " and staffNo like ?";
         arr.push('%' + data.staffNo + '%');
@@ -62,10 +63,10 @@ async function listStaff(ctx) {
     const connection = await mysql.createConnection(config.mysqlDB);
     const [list] = await connection.execute("SELECT * FROM `staff`"+querying.replace('and','where'), arr);
     await connection.end();
-    list.forEach(obj=>{
-        obj.user_email = '****'+obj.user_email.slice(4);//过滤邮箱地址
-        obj.user_pass = '';
-    });
+    // list.forEach(obj=>{
+    //     obj.user_email = '****'+obj.user_email.slice(4);//过滤邮箱地址
+    //     obj.user_pass = '';
+    // });
     ctx.body = {
         success: true,
         data:{data:list}

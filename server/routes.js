@@ -24,7 +24,6 @@ const urls = {
     'listUpFile': {},
     'delFile': {},
     'listUser': {},
-    'staffMana': {},//管理员工信息，员工列表
     'listStaff':{},
     'updateUser' : {},
     'updateStaff' : {},  //更新员工信息
