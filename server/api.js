@@ -295,7 +295,7 @@ async function updateUser(ctx) {
 async function getUserById(ctx) {
     let id = ctx.request.body.id >> 0;
     const connection = await mysql.createConnection(config.mysqlDB);
-    const [list] = await connection.execute("SELECT * FROM user where id=?", [id]);
+    const [list] = await connection.execute("SELECT * FROM staff where id=?", [id]);
     const success = list.length === 1;
     await connection.end();
     ctx.body = {

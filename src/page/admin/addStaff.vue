@@ -179,16 +179,16 @@
         },
         mounted() {
             let id = this.$route.params.id;
-            console.log(id)
+            // console.log(id)
             if(id) {
                 ajax.call(this, '/getUserById', {id}, (obj, err) => {
                     if (!err) {
                         Object.getOwnPropertyNames(this.data).forEach(key => {
-                            if(key !== 'pass_word'){
+                            if(key !== 'staffPwd'){
                                 this.data[key] = obj[key]+'';
                             }
                         });
-                        this.data.pass_word = common.defaultPassword;
+                        // this.data.staffPwd = common.defaultPassword;
                     }
                 })
             }

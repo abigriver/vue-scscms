@@ -21,6 +21,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
+                    <el-button type="primary" plain @click='clearSearch'>清空查询条件</el-button>
                     <el-button size="small" icon="search" @click='onSearch'>查询</el-button>
                     <el-button size="small" icon="plus" :disabled="grade.updateUser" type="primary" @click='add'>添加用户</el-button>
                 </el-form-item>
@@ -86,11 +87,16 @@
                     }
                 });
             },
+            clearSearch(){
+                this.search_data.staffNo = this.search_data.staffName =
+                    this.search_data.staffPhone =this.search_data.staffType ='' ;
+                this.ajaxData();
+            },
             onSearch() {
                 this.ajaxData();
             },
             selectable(row){
-                return !this.grade.deleteUser && /^[012345]$/.test(row.user_type);
+                return !this.grade.deleteUser && /^[012345]$/.test(row.staffType);
             },
             createButton(h, row, code, text){
                 let self = this;
@@ -109,6 +115,7 @@
                     }
                 },[text])
             },
+            //格式化显示列表， 并且增加2个按钮
             columnFormatter(row, column){
                 let key = column.property;
                 let str = row[key]+'';
@@ -120,10 +127,13 @@
                         this.createButton(h,row,'edit','编辑'),
                         this.createButton(h,row,'delete','删除'),
                     ])
+                    //用于快速改变用户类型，
                 }else if(key === 'staffType'){
-                    if(str === '0'){
-                        return this.createButton(h,row,key,'通过');
-                    }
+                    // 添加一个下拉列表改变
+                    // return this.createdSelected()
+                    // if(str === '0'){
+                    //     return this.createButton(h,row,key,'通过');
+                    // }
                     str = common.user_type[str]||'未知';
                 }
                 return str;
@@ -163,7 +173,7 @@
             },
             healColumnClick(code, row){
                 if(code ==='edit'){
-                    this.$router.push('/user/edit/'+row.id);
+                    this.$router.push('/admin/edit/'+row.id);
                 }else if(code ==='passed'){
                     this.passedUser([row]);
                 }else if(code === 'delete'){

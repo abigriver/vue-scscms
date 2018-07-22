@@ -47,7 +47,27 @@ export default {
                         title: '员工管理',
                         icon:'fa fa-th-large'
                     },
-                    component: staffMana
+                    component: staffMana,
+                    children:[
+                        {
+                            path: 'edit/:id',
+                            meta:{
+                                verify:true,
+                                title: '编辑员工',
+                                icon:'fa fa-user-times'
+                            },
+                            component: addStaff
+                        }
+                    ]
+                },
+                {
+                    path: 'edit/:id',
+                    meta:{
+                        verify:true,
+                        title: '编辑员工',
+                        icon:'fa fa-user-times'
+                    },
+                    component: addStaff
                 },
                 {
                     path: 'addStaff',

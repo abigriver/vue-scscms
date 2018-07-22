@@ -480,7 +480,8 @@
             .top_left {
                 width: 195px;
                 animation: left_open .3s;
-                background: url('../assets/scs_logo.png') no-repeat 18px 8px;
+                background: url('../assets/scs_logo.png') no-repeat center;
+                background-size:50% 50%;
             }
             .top_right {
                 width: 200px;
