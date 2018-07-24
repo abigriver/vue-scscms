@@ -13,10 +13,12 @@ import routes_obj from './server/routes.js';
 
 const app = new Koa();
 const router = koa_router();
+const koaBody = require('koa-body');
 
 app.use(koa_bodyparser());
 app.use(json());
 app.use(logger());
+
 
 const fs = require('fs');
 function writeLog(data){
@@ -57,7 +59,14 @@ router.use('/api', routes_obj.routes.routes());
 app.use(router.routes()); // 将路由规则挂载到Koa上。
 app.use(historyApiFallback());
 app.use(serve(path.resolve('dist'))); // 将webpack打包好的项目目录作为Koa静态文件服务的目录
-
+app.use(
+    koaBody({
+        multipart: true,
+        formidable: {
+            maxFileSize: 20*1024*1024    // 设置上传文件大小最大限制，默认2M
+        }
+    })
+)
 app.listen(3001, () => {
     console.log('Koa is listening in 3001');
 });

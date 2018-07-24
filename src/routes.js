@@ -12,6 +12,8 @@ import staffMana from 'page/admin/staffMana'
 import addStaff from 'page/admin/addStaff'
 import campusCodeMana from 'page/admin/campusCodeMana'
 import freeMount from 'page/admin/freeMount'
+import stuMana from 'page/admin/stuMana'
+import importStu from 'page/admin/importStu'
 //todo 记录
 /*
 *
@@ -32,7 +34,8 @@ export default {
             name:'login',
             meta:{title:'登录'},
             component: Login
-        },
+        }
+        ,
         {
             path:'/admin',
             meta:{verify:true, title:'后台管理'},
@@ -79,6 +82,26 @@ export default {
                     },
                     component: addStaff
                 },
+                {
+                   path: 'stuMana',
+                   meta:{
+                       verify:true,
+                       title:'学生管理',
+                       icon:'fa fa-th-large'
+                   } ,
+                    component: stuMana
+                }
+                ,
+                {
+                    path: 'addStu',
+                    meta:{
+                        verify:true,
+                        title:'导入学生',
+                        icon:'fa fa-th-large'
+                    } ,
+                    component: importStu
+                }
+                ,
                 {
                     path: 'campusCode',
                     meta:{

@@ -34,8 +34,10 @@
             </el-form>
             <el-button type="primary" plain @click='clearSearch'>清空查询条件</el-button>
             <el-button size="small" icon="search" @click='onSearch'>查询</el-button>
-            <el-button size="small" icon="plus" :disabled="grade.updateUser" type="primary" @click='add'>添加用户</el-button>
-            <el-button size="small" icon="plus" :disabled="grade.updateUser" type="primary" @click='importStu'>导入学生</el-button>
+            <el-button size="small" icon="plus" :disabled="grade.updateUser" type="primary" @click='add'>添加单个学生</el-button>
+
+
+            <el-button size="small" icon="plus" :disabled="grade.updateUser" type="primary" @click='addStuFromExcel'></el-button>
             <el-row>
                 <el-button type="danger" :disabled="grade.deleteUser" @click='deleteUser()'>批量删除</el-button>
             </el-row>
@@ -53,6 +55,7 @@
                 </el-table-column>
             </el-table>
         </el-row>
+
     </div>
 </template>
 <script type="text/javascript">
@@ -172,8 +175,8 @@
                     }
                 });
             },
-            importStu(){
-                this.$router.push('admin/preImportStu')
+            addStuFromExcel(){
+                this.$router.push('/admin/addStu');
             },
             add(){
                 this.$router.push('/admin/addStaff');

@@ -25,11 +25,14 @@ const urls = {
     'delFile': {},
     'listUser': {},
     'listStaff':{},
+    'listStu':{},
     'updateUser' : {},
     'updateStaff' : {},  //更新员工信息
+    'updateStu':{},
     'getUserById': {userType: common.page_grade.updateUser},
     'passedUser': {},
     'deleteUser': {},
+    'upExcelFile':{},
     'upUserPic': {userType: 4},//用户上传头像
     'listArticle': {},
     'updateArticle': {},
@@ -39,10 +42,11 @@ const urls = {
 };
 
 Object.getOwnPropertyNames(urls).forEach(key=>{
+    // 如果设置了权限，就用page_grade中的权限
     if(common.page_grade.hasOwnProperty(key)){
         urls[key].userType = common.page_grade[key];//覆盖访问权限
     }
-    // 循环添加路由
+    // 循环添加路由，除了upFile单独处理
     if(key !== 'upFile'){
         let obj = urls[key];
         let url = '/' + key + (obj.url || '');
@@ -51,7 +55,7 @@ Object.getOwnPropertyNames(urls).forEach(key=>{
 });
 
 
-//文件上传配置
+//文件上传配置：自定义 上传路径和文件名（当前日期Date.now()的毫秒数）
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         if (!fs.existsSync(config.upPath)) {
@@ -64,7 +68,7 @@ const storage = multer.diskStorage({
         cb(null,Date.now() + "." + fileFormat[fileFormat.length - 1]);
     }
 });
-//上传文件
+//上传文件 multer中间件
 routes.post('/upFile', multer({storage}).single('file'), async ctx => {
     const {originalname,mimetype,filename,path,size} = ctx.req.file;
     let msg,is_del = 0;
@@ -75,6 +79,25 @@ routes.post('/upFile', multer({storage}).single('file'), async ctx => {
         fs.unlinkSync(path);//同步删除文件
     }
     await api.saveUpFile([ctx.state.userInfo.id,originalname,path,mimetype,size,is_del,new Date().toLocaleString()]);
+    ctx.body = {
+        success: !msg,
+        message:msg,
+        data: {
+            filename: fullPath
+        }
+    }
+});
+routes.post('/upExcelFile', multer({storage}).single('file'), async ctx => {
+    const {originalname,mimetype,filename,path,size} = ctx.req.file;
+    let msg,is_del = 0;
+    let fullPath = common.web_domain + config.upPath.replace('uploads/','/') + filename;
+    //没有写  文件格式限制 todo
+    if(size > common.upFile_maxSize ) {
+        msg = size > common.upFile_maxSize?'上传文件大小超出':'非法上传文件格式';
+        is_del = 1;
+        fs.unlinkSync(path);//同步删除文件
+    }
+    // await api.saveUpFile([ctx.state.userInfo.id,originalname,path,mimetype,size,is_del,new Date().toLocaleString()]);
     ctx.body = {
         success: !msg,
         message:msg,

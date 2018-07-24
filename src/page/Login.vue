@@ -1,11 +1,11 @@
 <template>
     <div class="scs-screen login">
-        <el-row class="content">
+        <el-row class="content" >
             <div class="logo" style="float:left"></div>
             <div style="float:left; padding-left: 20px" >
                 <p style="font-size: 30px; padding-top:10px"> 水电收费系统</p>
             </div>
-            <el-row>
+            <el-row v-if="!retrive">
                 <el-form label-width="0px" :model="data" :rules="rule_data" ref="loginForm">
                     <el-form-item prop='user_name'>
                         <el-input type="text" placeholder="账号" v-model="data.user_name"
@@ -17,41 +17,65 @@
                     </el-form-item>
                 </el-form>
                 <el-button type="primary" @click="login" :disabled="loading">登录</el-button>
-                <!--注册按钮，不需要-->
-                <!--<el-button @click="openReg('register')" :disabled="loading">注册</el-button>-->
+
                 <el-button type="text" @click="openReg('retrieve')">忘记密码</el-button>
             </el-row>
+            <el-row v-if="retrive">
+                <el-tabs type="border-card">
+                    <el-tab-pane label="通过邮箱找回">
+                        <el-form  >
+                            <el-form-item label="邮箱"  >
+                                <el-input   ></el-input>
+                            </el-form-item>
+                            <el-form-item label="" >
+                                <el-button type="primary" @click="retriveMailVcode()">获取邮箱验证码</el-button>
+                            </el-form-item>
+                            <el-form-item label="输入邮箱验证码:">
+                                <el-input   @keyup.native.enter="verifyMailCode()"></el-input>
+                            </el-form-item>
+                            <el-form-item label="新密码" >
+                                <el-input type="password"  ></el-input>
+                            </el-form-item>
+                            <el-form-item label="确认密码" >
+                                <el-input type="password"  @keyup.native.enter="confirmPwd()"></el-input>
+                            </el-form-item>
+                        </el-form>
+                    </el-tab-pane>
+
+                    <el-tab-pane label="通过手机找回">
+                        <el-form     >
+                            <el-form-item label="手机号"  >
+                                <el-input   ></el-input>
+                                <el-button type="primary" >获取验证码</el-button>
+                            </el-form-item>
+                            <el-form-item label="输入验证码" >
+                                <el-input > </el-input>
+                            </el-form-item>
+                            <el-form-item  >
+                                <el-input type="password"  ></el-input>
+                            </el-form-item>
+                            <el-form-item label="确认密码"  >
+                                <el-input type="password"  @keyup.native.enter="registers" ></el-input>
+                            </el-form-item>
+                        </el-form>
+                    </el-tab-pane>
+                </el-tabs>
+                <el-row style="background-color:rgb(228, 231, 237) ">
+                    <el-button type="primary" style="margin: 5px" @click="verifyModi()" >确定</el-button>
+                </el-row>
+            </el-row>
+
         </el-row>
 
-
-        <!--注册功能：本项目不需要-->
-        <el-dialog :title="title[type]" :visible.sync="register.visible" size="tiny">
-            <el-form :model="form" :rules="register.rules" label-width="80px" ref="regForm">
-                <el-form-item label="帐号" prop="user_name" v-if="type=='register'">
-                    <el-input v-model="form.user_name" :placeholder="placeholder.name"></el-input>
-                </el-form-item>
-                <el-form-item label="邮箱" prop="user_email">
-                    <el-input v-model="form.user_email" :placeholder="placeholder.email"></el-input>
-                </el-form-item>
-                <el-form-item :label="type=='register'?'密码':'新密码'" prop="pass_word">
-                    <el-input type="password" v-model="form.pass_word" :placeholder="placeholder.pass"></el-input>
-                </el-form-item>
-                <el-form-item label="确认密码" prop="pass_words">
-                    <el-input type="password" v-model="form.pass_words" @keyup.native.enter="registers" :placeholder="placeholder.pass"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="register.visible = false">取 消</el-button>
-                <el-button type="primary" :disabled="register.loading" @click="registers">确 定</el-button>
-            </div>
-        </el-dialog>
     </div>
 </template>
 
 <script>
     import common from 'common';
     import {ajax, storage} from 'utils';
+    import Retrivepwd from "./retrivepwd";
     export default {
+        components: {Retrivepwd},
         data () {
             const _this = this;
             return {
@@ -68,6 +92,7 @@
                     register:'用户注册',
                     retrieve:'找回密码'
                 },
+                retrive:false,
                 type:'register',//register|retrieve
                 loading: false,
                 rule_data: {
@@ -212,10 +237,15 @@
                     }
                 });
             },
+            verifyModi(){
+                this.retrive = false;
+            },
             openReg(type){
-                this.$refs.regForm && this.$refs.regForm.resetFields();
-                this.type = type;
-                this.register.visible = true;
+                // this.$refs.regForm && this.$refs.regForm.resetFields();
+                // this.type = type;
+                // this.register.visible = true;
+                // this.$router.push('/retrivepwd')
+                this.retrive = true;
             },
             login() {
                 this.$refs.loginForm.validate(valid => {

@@ -20,6 +20,9 @@ import routes from './routes.js';
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 
+import Blob from './excel/Blob'
+import Export2Excel from './excel/Export2Excel.js'
+
 const router = new VueRouter(routes);
 
 router.beforeEach((to, from, next) => {

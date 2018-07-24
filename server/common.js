@@ -2,6 +2,8 @@
 export default {
     web_name:'水电收费系统',
     web_domain:'http://localhost:3001',//访问域名
+    student_no:/^[(a-z)|(0-9)]{6,20}$/, //学号验证：6-20位字母数字组成
+    stuNoTxt:'学号不符合规则',
     name_reg:/^[(a-z\u4e00-\u9fa5)|(0-9)]{2,20}$/i, //帐号验证
     name_txt:'3至20个英文或中文字符或数字', //帐号规则
     // pass_reg:/^(?=.*[a-z])(?=.*\d)[a-z\d]{6,12}$/i, //密码验证
@@ -13,7 +15,7 @@ export default {
     email_txt:'请输入正确邮箱地址',
     pic_reg:/^(https?:\/\/|\/upFile\/)/i,
     pic_txt:'头像地址不正确！',
-    upFile_maxSize:1024*1024*5,//上传文件大小限制
+    upFile_maxSize:1024*1024*10,//上传文件大小限制
     upFile_accept:/^image\//,//上传文件格式限制
     user_type:{
         0: '所有人',
@@ -35,11 +37,13 @@ export default {
         batchDelSort:4,//批量删除分类权限
         delFile:4,	//批量或单个删除上传文件列表（管理员级别）
         upFile:4, //上传权限(共用)
+        upExcelFile:4,//上传
         listUpFile:4,//管理上传列表
         listUser:4,//用户列表
         listStaff:4, //********
         updateUser:4,//添加、修改用户（超级管理员）
         updateStaff:4, //*******
+        updateStu:4, //*******
         initSys:4,//初始化系统
         bakSys:4, //备份系统
         passedUser:4,//审核用户列表

@@ -37,6 +37,52 @@ function sendEmail(email, title, body) {
         });
     })
 }
+async function upExcelFile(ctx) {
+    const file = ctx.request.body.files.file;    // 获取上传文件
+    const reader = fs.createReadStream(file.path);    // 创建可读流
+    const ext = file.name.split('.').pop();        // 获取上传文件扩展名
+    const upStream = fs.createWriteStream(`/upload/${Math.random().toString()}.${ext}`);        // 创建可写流
+    reader.pipe(upStream);    // 可读流通过管道写入可写流
+    ctx.body ={
+        success: true,
+        data:{file}
+    }
+}
+//学生列表
+async function listStu(ctx) {
+    let data = ctx.request.body;
+    const arr = [];
+    let querying = '';
+
+    if(data.stuNo){
+        querying += " and stuNo like ?";
+        arr.push('%' + data.stuNo + '%');
+    }
+    if(data.stuName){
+        querying += " and stuName like ?";
+        arr.push('%' + data.stuName + '%');
+    }
+    if(data.stuPhoneNum){
+        querying += " and stuPhoneNum like ?";
+        arr.push('%' + data.stuPhoneNum + '%');
+    }
+    if(data.campusName){
+        querying += " and campusName like ?";
+        arr.push('%' + data.campusName + '%');
+    }
+    if(data.buildingName){
+        querying += " and buildingName like ?";
+        arr.push('%' + data.buildingName + '%');
+    }
+
+    const connection = await mysql.createConnection(config.mysqlDB);
+    const [list] = await connection.execute("SELECT * FROM `student`"+querying.replace('and','where'), arr);
+    await connection.end();
+    ctx.body = {
+        success: true,
+        data:{data:list}
+    };
+}
 // 员工列表
 async function listStaff(ctx) {
     let data = ctx.request.body;
@@ -157,6 +203,128 @@ async function upUserPic(ctx) {
         success: !msg,
         message: msg,
         data: {pic}
+    }
+}
+async function updateStu(ctx){
+    //传过来的是一个数组
+    let data = ctx.request.body;
+    //array 存放key
+    var msg;
+    // console.log('data',data)
+    const obj = {
+        stuNo:'学号',
+        stuName:'姓名',
+        campusName:'校区',
+        buildingName:'楼栋',
+        dormNum:'宿舍号',
+        needRemind:'提醒',
+        stuPhoneNum:'手机号',
+        stuPwd:'密码',
+    };
+    var arrayKey = Object.getOwnPropertyNames(obj);
+    //arrayvalue 存放字段的中文名
+    var arrayValue = []
+
+    for (let i in obj) {
+        arrayValue.push(obj[i]); //值
+    }
+    console.log("arrayValue:",arrayValue)
+
+    for( let i=0,c=true;i<5 && c;i++){
+        var key = arrayValue[i];
+        //对每个学生数据验证： 前5项是否为空，学号是否合法
+        for(let j=0;j<data.length;j++){
+            if(data[j][key]===''){
+                msg = obj[key]+'不能为空！';
+                c=false;
+                break;
+            }
+            if (!common.student_no.test(data[j].stuNo)) {
+                msg = common.stuNoTxt;
+                c=false;
+                break;
+            }
+        }
+
+    }
+
+    //检查remind
+    if(!msg){
+        for(let j=0;j<data.length;j++){
+            if(data[j]['提醒']!=='是' && data[j]['提醒']!=='否'){
+                msg = '提醒只能==是|否！';
+                break;
+            }
+        }
+    }
+
+    if(!msg){
+        const connection = await mysql.createConnection(config.mysqlDB);
+        //构造一个数组values = [ [学号,姓名,校区....],[学号,姓名,校区....]...] 插入
+
+        var values=[]
+        for(let i=0;i<data.length;i++){
+            //data每个元素是对象
+            // { '学号': '15011030304',
+            //     '姓名': '陈治远',
+            //     '校区': '汇南',
+            //     '楼栋': '3舍',
+            //     '宿舍号': '121',
+            //     '提醒': '否'
+            // },
+            let t=[]
+            for (let j in data[i]) {
+                if( data[i][j]==='是' || data[i][j]==='否' ){
+                    data[i][j]==='是' ? t.push( 1 ):t.push(0); //值
+                }else{
+                    t.push(data[i][j])
+                }
+            }
+            //如果没有手机号，则补上
+            t.length===6 ? t.push(''):''
+            //密码
+            t.push(bcrypt.hashSync(data[i]['学号'], bcrypt.genSaltSync(10)))
+            values.push(t)
+        }
+        // console.log("values:",values)
+
+        //先检查是否占用帐号
+        var stuNoIsExist = false
+        var rows = await connection.execute('SELECT stuNo  FROM `student` ')
+        for( let i in rows) {
+            for( let j in values) {
+                if (rows[i].stuNo === values[j][0]) {
+                    msg = '帐号已经被占用！'
+                    stuNoIsExist = true
+                    break;
+                }
+            }
+        }
+        if(!stuNoIsExist) {
+            let tempStr = arrayKey.join(',')
+            var sql = "INSERT INTO student(`stuNo`,`stuName`,`campusName`,`buildingName`,`dormNum`," +
+                "`needRemind`,`stuPhoneNum`,`stuPwd`) VALUES ?";
+            // console.log("sql:",sql)
+
+            connection.query(sql, [values], function (err, rows, fields) {
+                if(err){
+                    console.log('INSERT ERROR - ', err.message);
+                    msg = '添加学生失败';
+                    return;
+                }
+                console.log("INSERT SUCCESS");
+            });
+
+        }
+        await connection.end();
+    }
+
+
+
+    ctx.body = {
+        success: !msg,
+        message: msg,
+        data: {}
     }
 }
 //更新staff员工信息
@@ -386,17 +554,17 @@ async function login(ctx) {
     } else {
         //初步验证通过，开始查询数据库
         const connection = await mysql.createConnection(config.mysqlDB);
-        const [rows] = await connection.execute('SELECT * FROM `user` where `user_name`=?', [data.user_name]);
+        const [rows] = await connection.execute('SELECT * FROM `staff` where `staffNo`=?', [data.user_name]);
         msg = '用户名或密码错误！';//不应该具体透露是密码还是帐户出错！
         if (rows.length) {
             const userInfo = rows[0];
-            if (bcrypt.compareSync(data.pass_word, userInfo.pass_word)) {
-                if (userInfo.user_type === 0) {
-                    msg = '此帐号正在审核中！';
-                }else{
+            console.log(userInfo)
+            if (bcrypt.compareSync(data.pass_word, userInfo.staffPwd)) {
+
                     let ip = config.getClientIP(ctx);
-                    await connection.execute('UPDATE `user` SET `login_ip`=? where `id`=?', [ip, userInfo.id]);
+                    await connection.execute('UPDATE `staff` SET `login_ip`=? where `id`=?', [ip, userInfo.id]);
                     delete userInfo.pass_word;
+                    userInfo.hidetype='staff'
                     return ctx.body = {
                         success: true,
                         data: {
@@ -405,6 +573,25 @@ async function login(ctx) {
                                 config.JWTs.secret, {expiresIn: config.JWTs.expiresIn})
                         }
                     }
+
+            }
+        }else{
+            const [rows] = await connection.execute('SELECT * FROM `student` where `stuNo`=?', [data.user_name]);
+            if (rows.length) {
+                const userInfo = rows[0];
+                if (bcrypt.compareSync(data.pass_word, userInfo.stuPwd)) {
+                        let ip = config.getClientIP(ctx);
+                        await connection.execute('UPDATE `student` SET `login_ip`=? where `id`=?', [ip, userInfo.id]);
+                        delete userInfo.stuPwd;
+                        userInfo.hidetype='student'
+                        return ctx.body = {
+                            success: true,
+                            data: {
+                                userInfo,
+                                token: jwt.sign(Object.assign({ip}, userInfo),
+                                    config.JWTs.secret, {expiresIn: config.JWTs.expiresIn})
+                            }
+                        }
                 }
             }
         }
@@ -903,10 +1090,13 @@ export default {
     batchDelSort,
     listUser,
     listStaff,
+    listStu,
     passedUser,
     deleteUser,
     getUserById,
     upUserPic,
     updateUser,
-    updateStaff
+    upExcelFile,
+    updateStaff,
+    updateStu
 }
