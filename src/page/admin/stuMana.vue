@@ -88,10 +88,11 @@
                     columns: [
                         {"key": "stuNo", "name": "学号", width: 150},
                         {"key": "stuName", "name": "姓名", width: 150},
-                        {"key": "stuPhoneNum", "name": "手机", width: 150},
                         {"key": "campusName", "name": "校区", width: 120},
                         {"key": "buildingName", "name": "楼栋", width: 120},
+                        {"key": "dormNum", "name": "宿舍号", width: 120},
                         {"key": "needRemind", "name": "提醒", width:150},
+                        {"key": "stuPhoneNum", "name": "手机", width: 150},
                         {"key": "operations", "name": "操作", width: 135}
                     ],
                     data: []
@@ -107,8 +108,8 @@
                 });
             },
             clearSearch(){
-                this.search_data.staffNo = this.search_data.staffName =
-                    this.search_data.staffPhone =this.search_data.staffType ='' ;
+                this.search_data.stuName = this.search_data.stuNo =
+                    this.search_data.stuPhoneNum =this.search_data.campusName =this.search_data.buildingName= '' ;
                 this.ajaxData();
             },
             onSearch() {

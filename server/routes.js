@@ -24,6 +24,8 @@ const urls = {
     'listUpFile': {},
     'delFile': {},
     'listUser': {},
+    'listCampus': {userType: 0},
+    'listBuilding': {userType: 0},
     'listStaff':{},
     'listStu':{},
     'updateUser' : {},

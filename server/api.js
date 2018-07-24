@@ -48,6 +48,24 @@ async function upExcelFile(ctx) {
         data:{file}
     }
 }
+async function listCampus(ctx){
+    const connection = await mysql.createConnection(config.mysqlDB);
+    const [list] = await connection.execute("SELECT * FROM `campus`");
+    await connection.end();
+    ctx.body = {
+        success: true,
+        data:{data:list}
+    };
+}
+async function listBuilding(ctx){
+    const connection = await mysql.createConnection(config.mysqlDB);
+    const [list] = await connection.execute("SELECT * FROM `building`");
+    await connection.end();
+    ctx.body = {
+        success: true,
+        data:{data:list}
+    };
+}
 //学生列表
 async function listStu(ctx) {
     let data = ctx.request.body;
@@ -1098,5 +1116,7 @@ export default {
     updateUser,
     upExcelFile,
     updateStaff,
-    updateStu
+    updateStu,
+    listCampus,
+    listBuilding
 }
