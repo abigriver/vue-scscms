@@ -11,10 +11,10 @@ import userAdd from 'page/User/add.vue'
 import staffMana from 'page/admin/staffMana'
 import addStaff from 'page/admin/addStaff'
 import campusCodeMana from 'page/admin/campusCodeMana'
-import freeMount from 'page/admin/freeMount'
 import stuMana from 'page/admin/stuMana'
 import importStu from 'page/admin/importStu'
-//todo 记录
+import importFee from 'page/admin/importFee'
+
 /*
 *
 * */
@@ -112,14 +112,14 @@ export default {
                     },
                     component: campusCodeMana
                 },{
-                    path: 'initFee',
+                    path: 'importFee',
                     meta:{
                         verify:true,
                         grade:common.page_grade.listSort,
-                        title: '免费额度',
+                        title: '导入电费',
                         icon:'fa fa-th-large'
                     },
-                    component: freeMount
+                    component: importFee
                 }
             ]
         },

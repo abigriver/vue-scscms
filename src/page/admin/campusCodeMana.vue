@@ -78,16 +78,48 @@
                 <el-button type="primary" @click="addCampus">添加</el-button>
             </el-col>
         </el-row>
+        <el-row>
+        <el-tag type="info" style="background-color: #409EFF">设定水电费</el-tag>
+        </el-row>
+        <el-row>
+            <el-col :span="4">
+                <span> 水费</span>
+                <el-input
+                    v-model="fee.waterFee"
+                    size="small"
+                    placeholder="水费:xx/立方"
+                    clearable>
+                </el-input>
+            </el-col>
+
+            <el-col :span="4">
+                <span> 电费</span>
+                <el-input
+                    v-model="fee.eleFee"
+                    size="small"
+                    placeholder="电费:xx/度"
+                    clearable>
+                </el-input>
+            </el-col>
+            <el-col :span="4">
+                <br/>
+                <el-button type="primary" @click="modiFee">修改</el-button>
+            </el-col>
+        </el-row>
     </div>
 </template>
 
 <script>
     import ajax from '../../utils/ajax'
+    import store from '../../store/index'
     export default {
         name: "campusCodeMana",
         data() {
             return {
-
+                fee:{
+                    waterFee:0,
+                    eleFee:0
+                },
                 campus:{
                     campusName: '',
                     campusCode:''
@@ -165,10 +197,16 @@
             },
             handleSelectionChange(){
 
+            },
+            modiFee(){
+                console.log(this.fee.waterFee)
+                this.$store.commit('SET_WATER_FEE',this.fee.waterFee)
             }
         },
         mounted(){
 
+                this.fee.waterFee = this.$store.state.userInfo.waterFee
+                this.fee.eleFee = this.$store.state.userInfo.eleFee
                 ajax.call(this, '/listCampus', "", (obj, err) => {
                     if (!err) {
                         this.table_data.data = obj.data;
@@ -183,7 +221,6 @@
                                 value.campusName = t.campusName
                             }
                         }
-                        console.log(value)
                         this.building_data.data.push(value)
 
                     }

@@ -26,6 +26,8 @@ const urls = {
     'listUser': {},
     'listCampus': {userType: 0},
     'listBuilding': {userType: 0},
+    'writeFee': {userType: 0},
+    'listFee': {userType: 0},
     'listStaff':{},
     'listStu':{},
     'updateUser' : {},

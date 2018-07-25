@@ -57,6 +57,15 @@ async function listCampus(ctx){
         data:{data:list}
     };
 }
+async function listFee(ctx){
+    const connection = await mysql.createConnection(config.mysqlDB);
+    const [list] = await connection.execute("SELECT * FROM `elefee`");
+    await connection.end();
+    ctx.body = {
+        success: true,
+        data:{data:list}
+    };
+}
 async function listBuilding(ctx){
     const connection = await mysql.createConnection(config.mysqlDB);
     const [list] = await connection.execute("SELECT * FROM `building`");
@@ -217,6 +226,49 @@ async function upUserPic(ctx) {
         msg = result.affectedRows === 1 ? '' : '更新头像失败';
         await connection.end();
     }
+    ctx.body = {
+        success: !msg,
+        message: msg,
+        data: {pic}
+    }
+}
+async function writeFee(ctx){
+    let data = ctx.request.body;
+    var msg;
+    const obj = {
+        campusCode:'校区',
+        buildingCode:'楼栋',
+        dormNum:'宿舍号',
+        eleNum:'电表读数',
+        eleDate:'日期'
+    };
+    var arrayKey = Object.getOwnPropertyNames(obj);
+    var arrayValue = []
+    for (let i in obj) {
+        arrayValue.push(obj[i]); //  arrayValue: 校区，楼栋，宿舍号
+    }
+    const connection = await mysql.createConnection(config.mysqlDB);
+
+    var values=[]
+    for(let i=0;i<data.length;i++){
+
+        let t=[]
+        for (let j in data[i]) {
+            t.push(data[i][j])
+        }
+        values.push(t)
+    }
+    var sql = "INSERT INTO elefee(`campusCode`,`buildingCode`,`dormNum`," +
+        "`eleNum`,`eleDate`) VALUES ?";
+
+    connection.query(sql, [values], function (err, rows, fields) {
+        if(err){
+            console.log('INSERT ERROR - ', err.message);
+            msg = '导入失败';
+            return;
+        }
+        console.log("INSERT SUCCESS");
+    });
     ctx.body = {
         success: !msg,
         message: msg,
@@ -1118,5 +1170,7 @@ export default {
     updateStaff,
     updateStu,
     listCampus,
-    listBuilding
+    listBuilding,
+    writeFee,
+    listFee
 }
