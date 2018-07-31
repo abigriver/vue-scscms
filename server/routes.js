@@ -15,7 +15,7 @@ const urls = {
 	'findPassword': {userType: 0,method:'get',url:'/:email/:code'},//激活找回密码（游客）
     'changePassword' : {},
     'batchDelSort': {},
-    'upFile': {}, 
+    'upFile': {},
     'listUpFile': {},
     'delFile': {},
     'listUser': {},
