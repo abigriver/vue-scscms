@@ -14,6 +14,8 @@ import campusCodeMana from 'page/admin/campusCodeMana'
 import stuMana from 'page/admin/stuMana'
 import importStu from 'page/admin/importStu'
 import importFee from 'page/admin/importFee'
+import feeList from 'page/student/feeList'
+import resetDate from 'page/admin/resetDate'
 
 /*
 *
@@ -121,13 +123,42 @@ export default {
                     },
                     component: importFee
                 }
+                ,{
+                    path: 'resetDate',
+                    meta:{
+                        verify:true,
+                        grade:common.page_grade.listSort,
+                        title: '重置日期',
+                        icon:'fa fa-th-large'
+                    },
+                    component: resetDate
+                }
+            ]
+        },
+        {
+            path: '/student',
+            name:'student',
+            meta:{title:'费用查询'},
+            component: Home,
+            redirect:'/student/feeList',
+            children:[
+                {
+                    path: 'feeList',
+                    meta: {
+                        verify: true,
+                        grade: common.page_grade.listSort,
+                        title: '费用查询',
+                        icon: 'fa fa-th-large'
+                    },
+                    component: feeList
+                }
             ]
         },
         {
             path: '/article',
             meta:{
                 verify:true,
-                title:'文章管理',
+                title:'收费管理',
                 icon:'fa fa-file-text-o'
             },
             component: Home,

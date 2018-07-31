@@ -31,6 +31,7 @@ module.exports = {
             'store': path.resolve(__dirname, '../src/store'),
             'libs': path.resolve(__dirname, '../src/libs'),
             'utils': path.resolve(__dirname, '../src/utils'),
+            'excel': path.resolve(__dirname, '../src/excel'),//处理excel文件
         }
     },
     module: {

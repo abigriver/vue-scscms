@@ -8,19 +8,14 @@ import multer from 'koa-multer';
 import fs from "fs"
 const routes = koa_router();
 
-// userType:需要的用户权限  0:游客 1:超级管理员 2:普通管理员 3:VIP用户 4:普通用户
+// userType:需要的用户权限  0:游客 1:超级管理员 2:公寓管理员 3:收费员 4:楼栋管理员 5：学生
 const urls = {
     'login'   : {userType: 0},	//用户登录（游客）
-    'register': {userType: 0},	//用户注册（游客）
     'retrieve': {userType: 0},	//找回密码（游客）
 	'findPassword': {userType: 0,method:'get',url:'/:email/:code'},//激活找回密码（游客）
-    'active': {userType: 0,method:'get',url:'/:name/:code'},//帐号激活（游客）
     'changePassword' : {},
-    'listSort': {},
-    'updateSort': {},
-    'deleteSort': {},
     'batchDelSort': {},
-    'upFile': {},
+    'upFile': {}, 
     'listUpFile': {},
     'delFile': {},
     'listUser': {},
@@ -28,8 +23,10 @@ const urls = {
     'listBuilding': {userType: 0},
     'writeFee': {userType: 0},
     'listFee': {userType: 0},
+    'updateFee': {userType: 0},
     'listStaff':{},
     'listStu':{},
+    'searchFee':{userType: 0},
     'updateUser' : {},
     'updateStaff' : {},  //更新员工信息
     'updateStu':{},

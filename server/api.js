@@ -48,6 +48,49 @@ async function upExcelFile(ctx) {
         data:{file}
     }
 }
+async function searchFee(ctx){
+    const connection = await mysql.createConnection(config.mysqlDB);
+    let data = ctx.request.body;
+    let msg=''
+    let list=[]
+    let arr1=[],arr2=[]
+    var sql=''
+    try {
+
+        sql = "SELECT campusCode FROM `campus` where campusName LIKE '"+data.campusName+"'"
+        const [rows1] = await connection.execute(sql);
+
+        let cc = rows1[0].campusCode
+        sql = "SELECT buildingCode FROM `building` where buildingName LIKE '"+data.buildingName+"'"
+        const [rows2] = await connection.execute(sql);
+        let bc = rows2[0].buildingCode
+        let arr=[]
+        // ?? 占位符 是列名 ？是值
+        sql = 'SELECT * FROM elefee where buildingCode = ? and campusCode = ? and dormNum = ?'
+        // console.log(bc,cc,data.dormNum)
+        let s = "SELECT * FROM `elefee` WHERE dormNum='" + data.dormNum + "' and buildingCode = '"+
+            bc + "' and campusCode = '" + cc +"'"
+        const [rows3] = await connection.execute(s);
+
+        // let oo=[]
+        // oo.push(bc); oo.push(cc); oo.push(data.dormNum);
+        // oo[0]=bc; oo[1]=cc; oo[2]=data.dormNum; console.log(oo)
+        // connection.query(sql, oo, function(err, results) {
+        //         console.log(results)
+        //
+        // });
+        // console.log(list)
+        list = rows3
+    }catch (e) {
+        msg=e.toString()
+    }
+    ctx.body = {
+        success: true,
+        msg:msg,
+        data:{data:list}
+    };
+
+}
 async function listCampus(ctx){
     const connection = await mysql.createConnection(config.mysqlDB);
     const [list] = await connection.execute("SELECT * FROM `campus`");
@@ -230,6 +273,24 @@ async function upUserPic(ctx) {
         success: !msg,
         message: msg,
         data: {pic}
+    }
+}
+async function updateFee(ctx){
+    let data = ctx.request.body;
+    var msg
+    if ( !common.date_set.test(data.data)) {
+        msg = "错误的日期格式"
+    }
+    if(!msg) {
+        const connection = await mysql.createConnection(config.mysqlDB);
+        var sql = "UPDATE  elefee set resetDate = '" + data.data + "'";
+        const [list] = await connection.execute(sql);
+        await connection.end();
+    }
+    ctx.body = {
+        success: !msg,
+        data:{data:data},
+        message: msg
     }
 }
 async function writeFee(ctx){
@@ -630,7 +691,6 @@ async function login(ctx) {
             const userInfo = rows[0];
             console.log(userInfo)
             if (bcrypt.compareSync(data.pass_word, userInfo.staffPwd)) {
-
                     let ip = config.getClientIP(ctx);
                     await connection.execute('UPDATE `staff` SET `login_ip`=? where `id`=?', [ip, userInfo.id]);
                     delete userInfo.pass_word;
@@ -649,9 +709,10 @@ async function login(ctx) {
             const [rows] = await connection.execute('SELECT * FROM `student` where `stuNo`=?', [data.user_name]);
             if (rows.length) {
                 const userInfo = rows[0];
+                console.log(userInfo)
                 if (bcrypt.compareSync(data.pass_word, userInfo.stuPwd)) {
                         let ip = config.getClientIP(ctx);
-                        await connection.execute('UPDATE `student` SET `login_ip`=? where `id`=?', [ip, userInfo.id]);
+                        await connection.execute('UPDATE `student` SET `login_ip`=? where `stuNo`=?', [ip, userInfo.stuNo]);
                         delete userInfo.stuPwd;
                         userInfo.hidetype='student'
                         return ctx.body = {
@@ -1172,5 +1233,7 @@ export default {
     listCampus,
     listBuilding,
     writeFee,
-    listFee
+    listFee,
+    searchFee,
+    updateFee
 }

@@ -19,9 +19,9 @@
                 <div class="user_info" @click.stop="">
                     <dl class="clearfix">
                         <dt @click="upPic"></dt>
-                        <dd>帐号：{{userInfo.staffName}}</dd>
+                        <dd>帐号：{{userInfo.user_name}}</dd>
                         <dd>角色：{{getUserType}}</dd>
-                        <dd>邮箱：{{userInfo.staffPhone}}</dd>
+                        <dd>邮箱：{{userInfo.user_email}}</dd>
                     </dl>
                     <el-button size="small" type="primary" @click="loginOut">退出系统</el-button>
                     <el-button size="small" @click="showChange" :disabled="grade.changePassword">修改密码</el-button>
@@ -136,7 +136,7 @@
         ]
     };
     export default {
-        name: 'home',
+        name: 'stuhome',
         data () {
             const _this = this;
             return {
@@ -246,7 +246,7 @@
                 return menu;
             },
             getUserType(){
-                return common.user_type[this.userInfo.staffType] || '未知';
+                return common.user_type[this.userInfo.user_type] || '未知';
             }
         },
         mounted(){
@@ -341,13 +341,12 @@
                 }
             },
             setUserInfo(){
-                //用户姓名的第一个字的效果
+                //因不想太多变量和条件判断及style在html里，在此使用js来修改dom
                 let dom = document.querySelectorAll(".top_right p,.user_info dt");
                 if (dom.length) {
                     const v = this.userInfo;
-                    let name_t = v.staffName || v.stuName
-                    let name = name_t.replace(/[a-z]+/g, '');
-                    name = name ? name.slice(0, 1) : name_t.slice(0, 2);
+                    let name = v.user_name.replace(/[a-z]+/g, '');
+                    name = name ? name.slice(0, 1) : v.user_name.slice(0, 2);
                     Array.from(dom).forEach(d => {
                         d.removeAttribute('style');
 						d.style.backgroundColor = '#f60';

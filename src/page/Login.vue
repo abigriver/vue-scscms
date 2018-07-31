@@ -198,6 +198,8 @@
             let key = this.$route.query.active || this.$route.query.find;
             if (key && common.deal_results.hasOwnProperty(key)) {
                 let msg = this.$route.query.active ? '激活用户' : '密码找回';
+                console.log("key",key)
+
                 this.$notify({
                     title: '系统通知',
                     duration: 10000,
@@ -207,36 +209,6 @@
             }
         },
         methods: {
-            registers(){
-                this.$refs.regForm.validate(valid => {
-                    if (valid) {
-                        this.$confirm('确定要' + this.title[this.type] + '？注意：操作后需要邮箱激活帐号！', '系统提醒', {
-                            confirmButtonText: '确定',
-                            cancelButtonText: '取消',
-                            type: 'warning'
-                        }).then(() => {
-                            this.register.loading = true;
-                            ajax.call(this, '/' + this.type, this.form, (data, err) => {
-                                this.register.loading = false;
-                                if (!err) {
-                                    this.register.visible = false;
-                                    let msg = this.type === 'register' ? '注册用户' : '找回密码';
-                                    this.$message({
-                                        message: (data.emailErr ? '#成功。但激活邮件发送失败，请联系管理员！' : '恭喜您#成功,请登录邮箱激活帐号！').replace('#', msg),
-                                        type: data.emailErr ? 'warning' : 'success'
-                                    });
-                                } else {
-                                    this.err = err;
-                                    if (err.includes('帐号') || err.includes('邮箱')) {
-                                        this.$refs.regForm.validateField(err.includes('帐号') ? 'user_name' : 'user_email');
-                                    }
-                                }
-                            })
-                        }).catch(() => {
-                        });
-                    }
-                });
-            },
             verifyModi(){
                 this.retrive = false;
             },
@@ -254,9 +226,18 @@
                         ajax.call(this, '/login', this.data, (data, err) => {
                             this.loading = false;
                             if (!err) {
-                                storage.set('userInfo', data, () => {
-                                    this.$router.replace(this.$route.query.url||'/article/list');
-                                })
+                                //学生
+                                if( data.userInfo.hidetype ==='staff' ){
+                                    storage.set('userInfo', data, () => {
+                                        this.$router.push('/admin')
+                                        // this.$router.replace(this.$route.query.url||'/article/list');
+                                    })
+                                }else {
+                                    storage.set('userInfo', data, () => {
+                                        this.$router.push('/student')
+                                        // this.$router.replace(this.$route.query.url||'/student');
+                                    })
+                                }
                             }
                         })
                     }

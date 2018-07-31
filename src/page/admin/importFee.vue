@@ -17,6 +17,7 @@
             <el-table-column label="宿舍号" prop="宿舍号" show-overflow-tooltip></el-table-column>
             <el-table-column label="电表读数" prop="电表读数" show-overflow-tooltip></el-table-column>
             <el-table-column label="日期" prop="日期" show-overflow-tooltip></el-table-column>
+            <el-table-column label="日期" prop="余额" show-overflow-tooltip></el-table-column>
         </el-table>
     </div>
 </template>
@@ -48,7 +49,8 @@
                     buildingCode:'楼栋',
                     campusCode:'校区',
                     eleNum:'电表读数',
-                    eleDate:'日期'
+                    eleDate:'日期',
+                    balance:'余额'
                 };
                 var arrayKey = Object.getOwnPropertyNames(oo);
                 var arrayValue = []
